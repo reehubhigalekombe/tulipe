@@ -94,7 +94,7 @@ app.post("/mpesa/stkpush", async(req, res) => {
                 PartyA: formattedPhone,
                 PartyB: shortCode,
                 PhoneNumber: formattedPhone,
-                CallBackURL: "https://your-callback-url.com/mpesa/callback",
+                CallBackURL: "https://https://tulipe.onrender.com/mpesa/callback",
                 AccountReference: "TuLipe",
                 TransactionDesc: "Tulipe Payment"
              },
@@ -115,6 +115,15 @@ app.post("/mpesa/stkpush", async(req, res) => {
             error: error.response?.data || error.message
         })
     }
+})
+app.post("/mpesa/callback", (req, res) => {
+    console.log("MPESA callBack was received");
+    console.log(JSON.stringify(req.body, null, 2));
+    res.json({
+        ResultCode: 0,
+        ResultDesc: "Accepted"
+    })
+
 })
 
 app.listen(PORT, "0.0.0.0", () => {
