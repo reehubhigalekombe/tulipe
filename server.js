@@ -78,7 +78,7 @@ app.post("/mpesa/stkpush", async(req, res) => {
           String(date.getSeconds()).padStart(2, "0");
 
 
-          const shortCode = "254742106109";
+          const shortCode = 174379
           const password = Buffer.from(
             shortCode + process.env.MPESA_PASSKEY + 
             timeStamp
@@ -94,7 +94,7 @@ app.post("/mpesa/stkpush", async(req, res) => {
                 PartyA: formattedPhone,
                 PartyB: shortCode,
                 PhoneNumber: formattedPhone,
-                CallBackURL: "https://https://tulipe.onrender.com/mpesa/callback",
+                CallBackURL: "https://tulipe.onrender.com/callback",
                 AccountReference: "TuLipe",
                 TransactionDesc: "Tulipe Payment"
              },
@@ -116,7 +116,7 @@ app.post("/mpesa/stkpush", async(req, res) => {
         })
     }
 })
-app.post("/mpesa/callback", (req, res) => {
+app.post("/callback", (req, res) => {
     console.log("MPESA callBack was received");
     console.log(JSON.stringify(req.body, null, 2));
     res.json({
