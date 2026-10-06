@@ -7,7 +7,7 @@ try {
             message: "Authentication token Missing"
         });
     }
-    const token = authHeader.split("")[1];
+    const token = authHeader.split(" ")[1];
     if(!token) {
         return res.status(501).json({
             message: "Authentication token is missing"
@@ -17,7 +17,7 @@ try {
         token, process.env.JWT_SECRET
     );
 
-    req.merchant = decoded.merchantId;
+    req.merchantId= decoded.merchantId;
     next();
 
 }catch(error) {
