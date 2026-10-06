@@ -93,7 +93,8 @@ process.env.JWT_SECRET, { expiresIn: "1d"});
 
     res.status(200).json({
         message: "Login Success",
-        merchnat: {
+        token,
+        merchant: {
             id: merchant._id,
              fullName: merchant.fullName,
              businessName: merchant.businessName,
