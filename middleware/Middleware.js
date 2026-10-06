@@ -7,6 +7,12 @@ try {
             message: "Authentication token Missing"
         });
     }
+    const token = authHeader.split("")[1];
+    if(!token) {
+        return res.status(501).json({
+            message: "Authentication token is missing"
+        })
+    }
     const decoded = jwt.verify(
         token, process.env.JWT_SECRET
     );
