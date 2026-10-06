@@ -1,5 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import Merchant from "../model/Merchant.js";
 
 const router = express.Router();
@@ -78,11 +79,17 @@ try{
     }
 
     const passwordMatch = await bcrypt.compare(password, merchant.password)
+
     if(!passwordMatch) {
         return res.status(401).json({
             message: "Invalid phone number or password"
         })
     }
+
+    const token = jwt.sign({
+        merchantId: merchant._id
+    }, 
+process.env.JWT_SECRET, { expiresIn: "1d"});
 
     res.status(200).json({
         message: "Login Success",

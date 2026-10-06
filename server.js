@@ -3,7 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
 import connectDB from "./db.js";
-import authRouter from "./routes/auth.js"
+import authRouter from "./routes/auth.js";
+import Merchant from "./model/Merchant.js";
+import authMiddleware from "./middleware/Middleware.js";
 dotenv.config();
 
 
@@ -40,7 +42,7 @@ app.get("/mpesa/token", async(req, res) => {
     }
 })
 
-app.post("/mpesa/stkpush", async(req, res) => {
+app.post("/mpesa/stkpush", authMiddleware,  async(req, res) => {
     try {
         const {phone, amount} = req.body;
         if(!phone || ! amount) {
@@ -81,8 +83,14 @@ app.post("/mpesa/stkpush", async(req, res) => {
           String(date.getMinutes()).padStart(2, "0") +
           String(date.getSeconds()).padStart(2, "0");
 
+const merchant = await Merchant.findById(req.merchantId);
+if(!merchant) {
+    return res.status(404).json({
+        message: "Merchnat account not found"
+    })
+}
 
-          const shortCode = 174379
+          const shortCode = merchant.merchant.shortcode
           const password = Buffer.from(
             shortCode + process.env.MPESA_PASSKEY + 
             timeStamp
