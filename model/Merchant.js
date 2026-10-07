@@ -22,11 +22,21 @@ const merchantSchema = new mongoose.Schema(
             required: true,
         },
         merchant: {
+            paymentMethod: {
+                type: String,
+                enum:["till", "paybill"], 
+                equired: true,
+            },
             shortcode: {
             type: String,
             required: true,
             trim:  true,
             unique: true
+            },
+            accountNumber: {
+                type: String,
+                trim: true,
+                default: null
             },
         },
     },

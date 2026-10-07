@@ -7,11 +7,17 @@ const router = express.Router();
 
 router.post("/register",  async(req, res) => {
     try {
-        const {fullName, businessName, phoneNumber, password, shortcode} = req.body;
-        if(!fullName || !businessName || !phoneNumber || !password || !shortcode) {
+        const {fullName, businessName, phoneNumber, password, paymentMethod, shortcode, accountNumber,} = req.body;
+        if(!fullName || !businessName || !phoneNumber || !password || !paymentMethod || !shortcode) {
             return res.status(400).json({
                 message: "All fields are required for registartion"
             });    
+        }
+
+        if(paymentMethod === "paybill" & !accountNumber) {
+            return res.status(400).json({
+                message: "The Paybill account number is required"
+            })
         }
          const existingPhone = await Merchant.findOne({phoneNumber});
       if(existingPhone) {
@@ -24,7 +30,7 @@ const existingShortCode = await Merchant.findOne({
 })
           if(existingShortCode) {
         return res.status(409).json({
-            message: "This Till is is already registered"
+            message: "This Till or Paybill is is already registered"
         })
       };
 
@@ -33,7 +39,9 @@ const existingShortCode = await Merchant.findOne({
       const merchant = await Merchant.create({
         fullName, businessName, phoneNumber, password: hashedPassword,
         merchant: {
-            shortcode
+            paymentMethod,
+            shortcode, accountNumber: paymentMethod === " paybill"
+            ? accountNumber: null
         }
       });
 
@@ -44,7 +52,9 @@ const existingShortCode = await Merchant.findOne({
                 fullName: merchant.fullName,
                 businessName: merchant.businessName,
                 phoneNumber: merchant.phoneNumber,
+                paymentMethod: merchant.merchant.paymentMethod,
                 shortcode: merchant.merchant.shortcode,
+                accountNumber: merchant.merchant.accountNumber,
             }
         }
       )
@@ -54,7 +64,7 @@ const existingShortCode = await Merchant.findOne({
 "Registration error: " , error
         )
         res.status(500).json({
-            message: "Failed to register the Till"
+            message: "Failed to register the Merchant"
         })
     }
 });
@@ -99,8 +109,9 @@ process.env.JWT_SECRET, { expiresIn: "1d"});
              fullName: merchant.fullName,
              businessName: merchant.businessName,
              phoneNumber: merchant.phoneNumber,
+             paymentMethod: merchant.merchant.paymentMethod,
              shortcode: merchant.merchant.shortcode,
-
+             accountNumber: merchant.merchant.accountNumber,
         }
     })
 }catch(error) {
