@@ -25,7 +25,7 @@ app.get("/mpesa/token", async(req, res) => {
             `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`
         ).toString("base64");
         const response = await axios.get(
-            "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+              "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
                 headers: {
                     Authorization: `Basic ${auth}`
                 }
@@ -56,19 +56,23 @@ app.post("/mpesa/stkpush", authMiddleware,  async(req, res) => {
         ).toString("base64");
 
         const tokenResponce = await axios.get(
-             "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+             "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
                 headers: {
                     Authorization: `Basic ${auth}`
                 }
              }
         );
         const accessToken = tokenResponce.data.access_token;
-        let formattedPhone = phone.replace(/\D/g, "");
+        let formattedPhone = String(phone).replace(/\D/g, "");
         if(formattedPhone.startsWith("0")) {
             formattedPhone = "254" + formattedPhone.substring(1)
-        }
+        }else if (formattedPhone.startsWith("7") ||
+        formattedPhone.startsWith("1")
+    ) {
+        formattedPhone = "254" + formattedPhone;
+    }
 
-        if(!formattedPhone.startsWith("254")) {
+        if(!/^254[17]\d{8}$/.test(formattedPhone)) {
         return res.status(400).json({
             message: "Enter a valid Kenyan Conatct"
         })
@@ -98,8 +102,8 @@ if(!merchant) {
           if(paymentMethod === "paybill") {
             transactionType = "CustomerPayBillOnline";
 
-          } else if(transactionType === "till")  {
-transactionType = "CustomerBuyGoodsOnline"
+          } else if(paymentMethod === "till")  {
+transactionType = "CustomerBuyGoodsOnline";
           }
           else {
             return res.status(400).json({
@@ -113,7 +117,7 @@ transactionType = "CustomerBuyGoodsOnline"
           ).toString("base64");
 
           const stkResponse = await axios.post(
-             "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+               "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
              {
                 BusinessShortCode: shortCode,
                 Password: password,
