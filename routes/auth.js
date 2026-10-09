@@ -14,7 +14,7 @@ router.post("/register",  async(req, res) => {
             });    
         }
 
-        if(paymentMethod === "paybill" & !accountNumber) {
+        if(paymentMethod === "paybill" && !accountNumber) {
             return res.status(400).json({
                 message: "The Paybill account number is required"
             })
@@ -40,7 +40,7 @@ const existingShortCode = await Merchant.findOne({
         fullName, businessName, phoneNumber, password: hashedPassword,
         merchant: {
             paymentMethod,
-            shortcode, accountNumber: paymentMethod === " paybill"
+            shortcode, accountNumber: paymentMethod === "paybill"
             ? accountNumber: null
         }
       });

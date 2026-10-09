@@ -90,18 +90,35 @@ if(!merchant) {
     })
 }
 
-          const shortCode = merchant.merchant.shortcode
+          const shortCode = merchant.merchant.shortcode;
+          const paymentMethod = merchant.merchant.paymentMethod;
+
+          let transactionType;
+
+          if(paymentMethod === "paybill") {
+            transactionType = "CustomerPayBillOnline";
+
+          } else if(transactionType === "till")  {
+transactionType = "CustomerBuyGoodsOnline"
+          }
+          else {
+            return res.status(400).json({
+                message: "Invalid Merchant Payment Method"
+            })
+          }
+
           const password = Buffer.from(
             shortCode + process.env.MPESA_PASSKEY + 
             timeStamp
           ).toString("base64");
+
           const stkResponse = await axios.post(
-             "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+             "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
              {
                 BusinessShortCode: shortCode,
                 Password: password,
                 Timestamp: timeStamp,
-                TransactionType: "CustomerPayBillOnline",
+                TransactionType: transactionType,
                 Amount: Number(amount),
                 PartyA: formattedPhone,
                 PartyB: shortCode,

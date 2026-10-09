@@ -25,7 +25,7 @@ const merchantSchema = new mongoose.Schema(
             paymentMethod: {
                 type: String,
                 enum:["till", "paybill"], 
-                equired: true,
+                required: true,
             },
             shortcode: {
             type: String,
